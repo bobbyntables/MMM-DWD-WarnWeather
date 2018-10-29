@@ -19,7 +19,8 @@ Module.register("MMM-DWD-WarnWeather", {
 		changeColor: true,
 		interval: 10 * 60 * 1000, // every 10 minutes
 		loadingText: 'Warnungen werden geladen...',
-		noWarningText: 'Keine Warnungen'
+		noWarningText: 'Keine Warnungen',
+		hideWithNoWarning: false
 	},
 	// Required scrpits
 	getScripts: function () {
@@ -57,8 +58,8 @@ Module.register("MMM-DWD-WarnWeather", {
 	// Make node_helper to get new warning-data
 	updateWarnings: function (self) {
 		if (self.config.region) {
-		  self.sendSocketNotification('GET_WARNINGS', self.config.region);
-	  }
+			self.sendSocketNotification('GET_WARNINGS', self.config.region);
+		}
 		else if (self.config.lat && self.config.lng) {
 			var coords = {lat:self.config.lat, lng:self.config.lng};
 			self.sendSocketNotification('GET_WARNINGS', coords);
@@ -93,6 +94,11 @@ Module.register("MMM-DWD-WarnWeather", {
 
 		// Check if there are warnings for defined region
 		if (this.warnings.length < 1) {
+			// this can be done way better but I needed it quick and dirty ;-)
+			if (this.config.hideWithNoWarning == true){
+				wrapper = document.createElement("div");
+				return wrapper;
+			}
 			var noWarningWrapper = document.createElement("p");
 			noWarningWrapper.className = 'status';
 			noWarningWrapper.innerHTML = this.config.noWarningText;
